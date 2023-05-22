@@ -459,16 +459,17 @@
 
                         <Switch
                             android:id="@+id/switchLed"
-                            android:layout_width="wrap_content"
-                            android:layout_height="50sp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="164dp"
+                            android:layout_width="184dp"
+                            android:layout_height="58dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="140dp"
                             android:text="Bật/Tắt điện:"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="17sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:ignore="UseSwitchCompatOrMaterialXml" />
