@@ -385,7 +385,7 @@
                             app:iconTint="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintHorizontal_bias="0.909"
                             app:layout_constraintStart_toEndOf="@+id/textView17"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -413,6 +413,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="5dp"
                         android:background="@drawable/white_top_buttons"
                         app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
@@ -448,6 +449,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/Led"
                         android:layout_width="match_parent"
                         android:layout_height="60sp"
                         android:layout_marginStart="10dp"

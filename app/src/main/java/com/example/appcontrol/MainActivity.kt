@@ -8,6 +8,9 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -37,13 +40,16 @@ class PowerStatusService : Service() {
 
     private lateinit var powerRef: DatabaseReference
     private lateinit var notificationManager: NotificationManager
+    private lateinit var ringtone: Ringtone
     private val notificationChannelId = "PowerStatusChannel"
     private val powerStatusNotificationId = 1
 
     override fun onCreate() {
         super.onCreate()
-        powerRef = FirebaseDatabase.getInstance().getReference("/Status/Power")
+        powerRef = FirebaseDatabase.getInstance().getReference("/Status/SOS")
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationSoundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        ringtone = RingtoneManager.getRingtone(applicationContext, notificationSoundUri)
 
         // Create a notification channel for Android Oreo and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -70,28 +76,47 @@ class PowerStatusService : Service() {
                 // Update the UI based on the data
                 when (powerStatus) {
 
-                    "true" -> {
+                    "false" -> {
                         // Update the connected UI
                         binding.iconActiveDevices.setImageResource(R.drawable.woking_device)
-                        binding.textActiveDevices.text = "Active Devices"
+                        binding.textActiveDevices.text = "Active     Devices"
                         // Clear any existing notification
                         notificationManager.cancel(powerStatusNotificationId)
+
+                        // Stop the ringtone if it's playing
+                        if (ringtone.isPlaying) {
+                            ringtone.stop()
+                        }
                     }
-                    "false" -> {
+                    "true" -> {
                         // Update the disconnected UI
                         binding.iconActiveDevices.setImageResource(R.drawable.error)
                         binding.textActiveDevices.text = "Warning Devices"
 
+                        // Create an explicit intent for the activity you want to launch
+                        val intent = Intent(applicationContext, MainActivity::class.java)
+
+                        // Create the PendingIntent with FLAG_IMMUTABLE
+                        val pendingIntent = PendingIntent.getActivity(
+                            applicationContext,
+                            0,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
                         // Create a notification
                         val notificationBuilder = NotificationCompat.Builder(applicationContext, notificationChannelId)
                             .setContentTitle("Power Status")
                             .setContentText("Power status is disconnected")
                             .setSmallIcon(R.drawable.error)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                            .setContentIntent(getPendingIntent())
+                            .setContentIntent(pendingIntent)
 
                         // Show the notification
                         notificationManager.notify(powerStatusNotificationId, notificationBuilder.build())
+
+                        if (!ringtone.isPlaying) {
+                            ringtone.play()
+                        }
                     }
                 }
             }
@@ -118,8 +143,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var startTime:String = "22:0"
-        var endTime:String = "7:0"
+        var startTime:String = "22:00"
+        var endTime:String = "7:00"
         // Remove the title bar
         supportActionBar?.hide()
 //        setContentView(R.layout.activity_main)
@@ -195,8 +220,37 @@ class MainActivity : AppCompatActivity() {
             timePickerDialog.show()
         }
 
+        val loraRef = database.getReference("/Status/Lora")
         val autoRef = database.getReference("/Status/Auto")
         val ledRef = database.getReference("/Status/Led")
+        val buttonRef = database.getReference("/Status/Button")
+
+        buttonRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Get the data from the snapshot
+                val buttonStatus = snapshot.getValue<String>()
+
+                // Update the UI based on the data
+                when(buttonStatus){
+                    "true" -> {
+
+                        binding.Led.visibility = View.GONE
+
+                    }
+
+                    "false" -> {
+                        binding.Led.visibility = View.VISIBLE
+                    }
+
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+
         binding.switchAuto.setOnCheckedChangeListener { _, isChecked ->
             // Save the state of the Switch in SharedPreferences
             val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -305,8 +359,6 @@ class MainActivity : AppCompatActivity() {
 // Add a listener to listen for data changes
         // Create a reference to your Firebase Realtime Database
 
-        val loraRef = database.getReference("/Status/Lora")
-
 
 // Add a listener to listen for data changes
         loraRef.addValueEventListener(object : ValueEventListener {
@@ -347,99 +399,6 @@ class MainActivity : AppCompatActivity() {
 
         val serviceIntent = Intent(this, PowerStatusService::class.java)
         startService(serviceIntent)
-        /*
-                val powerRef = database.getReference("/Status/Power")
-
-                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                val notificationChannelId = "PowerStatusChannel"
-                val powerStatusNotificationId = 1
-
-        // Create a notification channel for Android Oreo and above
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val channel = NotificationChannel(
-                        notificationChannelId,
-                        "Power Status Channel",
-                        NotificationManager.IMPORTANCE_DEFAULT
-                    ).apply {
-                        description = "Channel for power status notifications"
-                        enableLights(true)
-                        lightColor = Color.RED
-                    }
-                    notificationManager.createNotificationChannel(channel)
-                }
-
-                powerRef.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        // Get the data from the snapshot
-                        val powerStatus = snapshot.getValue<String>()
-                        Log.d("value_powerStatus", "Value is: $powerStatus")
-
-                        // Update the UI based on the data
-                        when (powerStatus) {
-                            "true" -> {
-                                // Update the connected UI
-                                binding.iconActiveDevices.setImageResource(R.drawable.woking_device)
-                                binding.textActiveDevices.text = "Active Devices"
-
-                                // Clear any existing notification
-                                notificationManager.cancel(powerStatusNotificationId)
-                            }
-
-                            "false" -> {
-                                // Update the disconnected UI
-                                binding.iconActiveDevices.setImageResource(R.drawable.error)
-                                binding.textActiveDevices.text = "Warning Devices"
-
-                                // Create a notification
-                                val notificationBuilder = NotificationCompat.Builder(this@MainActivity, notificationChannelId)
-                                    .setContentTitle("Power Status")
-                                    .setContentText("Power status is disconnected")
-                                    .setSmallIcon(R.drawable.error)
-                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-                                // Show the notification
-                                notificationManager.notify(powerStatusNotificationId, notificationBuilder.build())
-                            }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // Handle error
-                    }
-                })
-
-
-        // Add a listener to listen for data changes
-                powerRef.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        // Get the data from the snapshot
-                        val powerStatus = snapshot.getValue<String>()
-                        Log.d("value_powerStatus", "Value is: $powerStatus")
-
-                        // Update the UI based on the data
-                        when(powerStatus){
-                            "true" -> {
-                                // Update the connected UI
-                                binding.iconActiveDevices.setImageResource(R.drawable.woking_device)
-                                binding.textActiveDevices.text = "Active Devices"
-                            }
-
-                            "false" -> {
-                                // Update the disconnected UI
-                                binding.iconActiveDevices.setImageResource(R.drawable.error)
-                                binding.textActiveDevices.text = "Warning Devices"
-                            }
-
-
-                        }
-
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // Handle error
-                    }
-                })
-        */
 
         val rainRef = database.getReference("/Status/Rain")
 
@@ -456,12 +415,15 @@ class MainActivity : AppCompatActivity() {
                         // Update the connected UI
                         binding.iconRainyNight.setImageResource(R.drawable.rainy_night)
                         binding.textRainyNight.text = "Rainy           Night"
+                        binding.Led.visibility = View.GONE
+
                     }
 
                     "false" -> {
                         // Update the disconnected UI
                         binding.iconRainyNight.setImageResource(R.drawable.night)
                         binding.textRainyNight.text = "Clouse           Night"
+                        binding.Led.visibility = View.VISIBLE
                     }
 
                 }
