@@ -9,10 +9,10 @@
 
 2. **Kết quả đạt được** 
   + Hệ thống lấy dữ liệu từ các cảm biến, sau đó sẽ được xử lý qua bộ xử lý trung tâm và hiển thị trên APP điện thoại bằng một nền tảng trung gian là Firebase.
-     ![image](https://github.com/NinhLuong/appcontrol/assets/90811122/10ad03b8-4a2e-4767-9fa9-46a379b418c8)
+![image](https://github.com/NinhLuong/appcontrol/assets/90811122/10ad03b8-4a2e-4767-9fa9-46a379b418c8)
   + Dữ liệu sẽ hiển thị lên ứng dụng trên điện thoại được thiết kế.
     ![image](https://github.com/NinhLuong/appcontrol/assets/90811122/9789cbc1-fcc9-4995-9589-0da343f44176)
-		![image](https://github.com/NinhLuong/appcontrol/assets/90811122/03bc7a92-9093-42ed-8e55-83f6605bdc29)
+	![image](https://github.com/NinhLuong/appcontrol/assets/90811122/03bc7a92-9093-42ed-8e55-83f6605bdc29)
   + Hệ thống có khả năng kiểm tra chập cháy của dây điện và báo trộm khi có sự can thiệp từ bên ngoài tắt điện trong quá trình chong điện để trộm dây điện bóng đèn. Khi điều đó xảy ra biến SOS trên Firebase sẽ đổi từ “false” thành “true” ngay lập tức điện thoại bật chuông thông báo để cách báo người dùng để đưa  ra hướng giải quyết.
   ![image](https://github.com/NinhLuong/appcontrol/assets/90811122/af116e33-a968-43a1-8840-ef2c025258d7)
   + Hệ thống sẽ có một server chạy liên tục để lấy dữ liệu dự báo thời tiết, tiến hành xử lý dữ liệu để đưa ra thời gian bật/tắt dự kiến một cách tối ưu nhất. Bên cạnh đó hệ thống server cũng theo dõi quá trình trong điện tính toán đủ giờ trong điện thì lập tức ngắt điện để không xảy ra hao phí điện.
