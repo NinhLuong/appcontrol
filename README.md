@@ -8,7 +8,7 @@
   + Hai chế độ của hệ thống đều có thể được người dùng thay đổi trên ứng dụng di động. Nó sẽ rất hữu dụng khi người dùng muốn điều chỉnh hoặc dể để kiểm thử hệ thống.
 
 2. **Kết quả đạt được** 
-  + Hệ thống lấy dữ liệu từ các cảm biến, sau đó sẽ được xử lý qua bộ xử lý trung tâm và hiển thị trên APP điện thoại bằng một nền tảng trung gian là Firebase.
+  + Hệ thống lấy dữ liệu từ các cảm biến, sau đó sẽ được xử lý qua bộ xử lý trung tâm và hiển thị trên APP điện thoại bằng một nền tảng trung gian là Firebase.<br>
 ![image](https://github.com/NinhLuong/appcontrol/assets/90811122/10ad03b8-4a2e-4767-9fa9-46a379b418c8)
   + Dữ liệu sẽ hiển thị lên ứng dụng trên điện thoại được thiết kế.
     ![image](https://github.com/NinhLuong/appcontrol/assets/90811122/9789cbc1-fcc9-4995-9589-0da343f44176)
